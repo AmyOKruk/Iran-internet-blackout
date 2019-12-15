@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Scrollytelling Template</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.css' rel='stylesheet' />
+    <script src="https://unpkg.com/intersection-observer@0.5.1/intersection-observer.js"></script>
+    <script src="https://unpkg.com/scrollama"></script>
+    <style>
+        body {
+            margin:0; 
+            padding:0; 
+            font-family: sans-serif;
+        }
+        a, a:hover, a:visited {
+            color: #0071bc;
+        }
+        #map {
+            top:0; 
+            height: 100vh;
+            width:100vw;
+            position: fixed;
+            z-index: -5;
+        }
+        #header {
+            margin: 3vh auto;
+            width: 90vw;
+            padding: 2vh;
+            text-align: center;
+        }
+        #footer {
+            width: 100%;
+            min-height: 5vh;
+            padding-top: 2vh;
+            padding-bottom: 2vh;
+            text-align: center;
+            line-height: 25px;
+            font-size: 13px;
+        }
+        #features {
+            padding-top: 100vh;
+            padding-bottom: 10vh;
+            z-index: 100;
+        }
+        .centered {
+            width: 50vw;
+            margin: 0 auto;
+        }
+        .lefty {
+            width: 33vw;
+            margin-left: 5vw;
+        }
+        .righty {
+            width: 33vw;
+            margin-left: 62vw;
+        }
+        .light {
+            color: #444;
+            background-color: #fafafa;
+        }
+        .dark {
+            color: #fafafa;
+            background-color: #444;
+        }
+        .step {
+            padding-bottom: 50vh;
+            /* margin-bottom: 10vh; */
+            opacity: 0.25;
+        }
+        .step.active {
+            opacity: 0.9;
+        }
+
+        .step div {
+            padding:  25px 50px;
+            line-height: 25px;
+            font-size: 13px;
+        }
+
+        .step img {
+            width: 100%;
+        }
+
+        @media (max-width: 750px) {
+            #features {
+                width: 90vw;
+                margin: 0 auto;
+            }
+        }
+
+        h4 {
+            font-size: 20px;
+            position: fixed;
+            top: 60vh;
+            right: 20vw;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: white;
+            padding: 0 1%;
+
+        }
+
+        .light img {
+            width: 200px;
+            margin: 0 auto 10px;
+            display: block;
+        }
+        </style>
+</head>
+<body>
+<h4 id='h4'></h4>
+<div id="map"></div>
+<div id="story"></div>
+
+
+<!-- <div id="mapbox-map-inject"></div> -->
+
+
+<script>
+  window.addEventListener('load', function() {
+    let iframe = document.createElement('iframe')
+    iframe.style = "width: 100%; height: 100vh;"
+    iframe.src = "mapbox.html"
+    document.querySelector("#mapbox-map-inject").appendChild(iframe)
+  })
+</script>
+
+
+<script src="./config.js"></script>
+<script src='d3.v3.min.js' charset='utf-8'></script>
+
+<script>
+        var s = ['Nov. 16, 2019', 'Nov. 17, 2019', 'Nov. 18, 2019', 'Nov. 19, 2019', 'Nov. 20, 2019']
+ 
+</script>
+<!-- <script src="d3.js"></script> -->
+<script>
+var layerTypes = {
+    'fill': ['fill-opacity'],
+    'line': ['line-opacity'],
+    'circle': ['circle-opacity', 'circle-stroke-opacity'],
+    'symbol': ['icon-opacity', 'text-opacity'],
+    'raster': ['raster-opacity'],
+    'fill-extrusion': ['fill-extrusion-opacity']
+}
+
+var alignments = {
+    'left': 'lefty',
+    'center': 'centered',
+    'right': 'righty'
+}
+
+function getLayerPaintType(layer) {
+    var layerType = map.getLayer(layer).type;
+    return layerTypes[layerType];
+}
+
+function setLayerOpacity(layer) {
+    var paintProps = getLayerPaintType(layer.layer);
+    paintProps.forEach(function(prop) {
+        map.setPaintProperty(layer.layer, prop, layer.opacity);
+    });
+}
+
+var story = document.getElementById('story');
+var features = document.createElement('div');
+features.classList.add(alignments[config.alignment]);
+features.setAttribute('id', 'features');
+
+var header = document.createElement('div');
+
+if (config.title) {
+    var titleText = document.createElement('h1');
+    titleText.innerText = config.title;
+    header.appendChild(titleText);
+}
+
+if (config.subtitle) {
+    var subtitleText = document.createElement('h2');
+    subtitleText.innerText = config.subtitle;
+    header.appendChild(subtitleText);
+}
+
+if (config.byline) {
+    var bylineText = document.createElement('p');
+    bylineText.innerText = config.byline;
+    header.appendChild(bylineText);
+}
+
+if (header.innerText.length > 0) {
+    header.classList.add(config.theme);
+    header.setAttribute('id', 'header');
+    story.appendChild(header);
+}
+
+config.chapters.forEach((record, idx) => {
+    var container = document.createElement('div');
+    var chapter = document.createElement('div');
+    
+    if (record.title) {
+        var title = document.createElement('h3');
+        title.innerText = record.title;
+        chapter.appendChild(title);
+    }
+    
+    if (record.description) {
+        var story = document.createElement('p');
+        story.innerHTML = record.description;
+        chapter.appendChild(story);
+    }
+
+    if (record.image) {
+        var image = new Image();  
+        image.src = record.image;  
+        chapter.appendChild(image);
+    }
+
+    container.setAttribute('id', record.id);
+    container.classList.add('step');
+    if (idx === 0) {
+        container.classList.add('active');
+    }
+
+    chapter.classList.add(config.theme);
+    container.appendChild(chapter);
+    features.appendChild(container);
+});
+
+story.appendChild(features);
+
+var footer = document.createElement('div');
+
+if (config.footer) {
+    var footerText = document.createElement('p');
+    footerText.innerHTML = config.footer;
+    footer.appendChild(footerText);
+}
+
+if (footer.innerText.length > 0) {
+    footer.classList.add(config.theme);
+    footer.setAttribute('id', 'footer');
+    story.appendChild(footer);
+}
+
+mapboxgl.accessToken = config.accessToken;
+
+const transformRequest = (url) => {
+    const hasQuery = url.indexOf("?") !== -1;	  
+    const suffix = hasQuery ? "&pluginName=journalismScrollytelling" : "?pluginName=journalismScrollytelling";	  
+    return {
+      url: url + suffix
+    }	  
+}
+
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: config.style,
+    center: config.chapters[0].location.center,
+    zoom: config.chapters[0].location.zoom,
+    bearing: config.chapters[0].location.bearing,
+    pitch: config.chapters[0].location.pitch,
+    scrollZoom: false,
+    transformRequest: transformRequest
+});
+
+// var marker = new mapboxgl.Marker();
+// if (config.showMarkers) {
+//     marker.setLngLat(config.chapters[0].location.center).addTo(map);
+// }
+
+// instantiate the scrollama
+var scroller = scrollama();
+
+map.on("load", function() {
+    // setup the instance, pass callback functions
+    scroller
+    .setup({
+        step: '.step',
+        offset: 0.5,
+        progress: true
+    })
+    .onStepEnter(response => {
+        var chapter = config.chapters.find(chap => chap.id === response.element.id);
+        if (chapter.id == 'other-identifier' ) {
+            document.getElementById("h4").style.opacity = "0";
+            
+        }
+        if (chapter.id == 'slug-style-id-first' ) {
+            document.getElementById("h4").style.opacity = "1";
+            
+        }
+        console.log(chapter.id)
+        response.element.classList.add('active');
+        map.flyTo(chapter.location);
+        if (config.showMarkers) {
+            marker.setLngLat(chapter.location.center);
+        }
+        if (chapter.onChapterEnter.length > 0) {
+            chapter.onChapterEnter.forEach(setLayerOpacity);
+            console.log(chapter.id)
+        }
+    })
+    .onStepExit(response => {
+        var chapter = config.chapters.find(chap => chap.id === response.element.id);
+        response.element.classList.remove('active');
+        if (chapter.onChapterExit.length > 0) {
+            chapter.onChapterExit.forEach(setLayerOpacity);
+        }
+    });
+});
+
+// setup resize event
+window.addEventListener('resize', scroller.resize);
+
+mutationObserver.observe(
+    document.getElementById('main'),
+    { attributes: true }
+)
+
+</script>
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYW15b2tydWsiLCJhIjoiY2p4bzFsOW1oMDI5ZDNib2F5Z3B5aHF2diJ9.1m_7WhyZA5MeYfVkItdP0g';
+    // var map = new mapboxgl.Map({
+    //     container: 'map',
+    //     style: 'mapbox://styles/mapbox/light-v10',
+    //     center: [54.495785, 31.974037],
+    //     zoom: 4
+    // });
+
+    function filterBy(unique) {
+
+        var filters = ['==', 'unique', unique];
+        map.setFilter('connection-circles', filters);
+        // map.setFilter('connection-labels', filters);
+        map.setPaintProperty('connection-circles', 'circle-opacity', 0.75); 
+
+        // Set the label to the month
+        // document.getElementById('time').textContent = times[time];
+    }
+
+    map.on('load', function() {
+
+        d3.json('iran_small.geojson', function(err, data) {
+            if (err) throw err;
+
+
+            data.features = data.features.map(function(d) {
+                d.properties.unique = d.properties.unique;
+                return d;
+            });
+
+            map.addSource('connections', {
+                'type': 'geojson',
+                data: data
+            });
+
+            map.addLayer({
+                'id': 'connection-circles',
+                'type': 'circle',
+                'source': 'connections',
+                'paint': {
+                    'circle-color': '#67000D',
+                    // 'circle-color': {
+                    //     property: "connectivity",
+                    //     type: "interval",
+                    //     stops: [
+                    //         // [100000, '#FFF5F0'],
+                    //         [20, '#FDCCB8'],
+                    //         [40, '#FC8F6F'],
+                    //         [60, '#E07774'],
+                    //         [80, '#C5161C'],
+                    //         [100, '#67000D']
+                    //     ]
+                    // },        
+                    'circle-opacity': 0,
+                    "circle-opacity-transition": {duration: 1000}
+                    ,
+                    'circle-radius': [
+                        'interpolate', ['linear'],
+                        ['get', 'connectivity'],
+                        50, 4,
+                        100, 10
+                    ]
+                }
+            });
+
+   
+
+            filterBy(0);
+
+            var unique = 0;
+            var interval = setInterval( increment, 250);
+
+            function increment(){
+                unique = unique % 360 + 1;
+
+                if (unique == 102) {
+                    unique = 0
+                }
+
+                else if (unique == 1) {
+                    document.getElementById("h4").innerHTML = 'Nov. 16, 2019'
+                }
+
+                else if (unique == 20) {
+                    document.getElementById("h4").innerHTML = 'Nov. 17, 2019'
+                }
+
+                else if (unique == 40) {
+                    document.getElementById("h4").innerHTML = 'Nov. 18, 2019'
+                }
+
+                else if (unique == 60) {
+                    document.getElementById("h4").innerHTML = 'Nov. 19, 2019'
+                }
+
+                else if (unique == 80) {
+                    document.getElementById("h4").innerHTML = 'Nov. 20, 2019'
+                }
+
+                filterBy(unique);
+
+            }
+
+
+
+            // console.log(
+            //     z = data.features.find(function(d) {
+            //     d.properties.unique = d.properties.unique;
+            //     return d;
+            // });
+            // )
+
+            // filter data when slider changes
+
+            // document.getElementById('slider').addEventListener('input', function(e) {
+            //     var unique = parseInt(e.target.value, 10);
+            //     filterBy(unique);
+            // });
+
+        });
+    });
+</script>
+
+
+</body>
+</html>

@@ -1,2 +1,2 @@
-# iran-internet-blackout
+# Iran-project
  Visualizing Iran's internet blackout 

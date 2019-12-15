@@ -1,0 +1,67 @@
+<!-- 
+  This line means, use default.hbs layout from src/html/layouts/
+-->
+
+{{!< default}}
+
+<!-- 
+  Put some content into an .hbs file inside of /partials, 
+  and you can just throw it in anywhere!
+-->
+{{> story/basic }}
+
+<div id="mapbox-map-inject"></div>
+
+<script>
+  window.addEventListener('load', function() {
+    let iframe = document.createElement('iframe')
+    iframe.style = "width: 100%; height: 100vh;"
+    iframe.src = "mapbox.html"
+    document.querySelector("#mapbox-map-inject").appendChild(iframe)
+  })
+</script>
+
+{{> story/bam-closeup }}
+
+{{> story/bam }}
+
+
+<!-- 
+  Charts are exactly the same.
+-->
+{{!-- 
+{{> story/chart }} --}}
+{{> story/illustrator_demo}}
+
+{{> story/timeline }}
+
+{{!-- {{> story/graph }} --}}
+
+<!-- 
+  If you want to use something exported from ai2html...
+    1. Rename the exported .html file to .hbs
+    2. Put the .hbs file inside of 'html/story'
+    3. Move the exported images to the images folder
+    4. Include the partial normally like below
+  -->
+  <div id='datawrapper-thing'>
+<iframe title="Internet penetration in the Middle East" aria-label="Interactive pie chart" id="datawrapper-chart-oaEJe" src="//datawrapper.dwcdn.net/oaEJe/2/" scrolling="no" frameborder="0" style="width: 0; min-width: 100% !important; border: none;" height="645"></iframe><script type="text/javascript">!function(){"use strict";window.addEventListener("message",function(a){if(void 0!==a.data["datawrapper-height"])for(var e in a.data["datawrapper-height"]){var t=document.getElementById("datawrapper-chart-"+e)||document.querySelector("iframe[src*='"+e+"']");t&&(t.style.height=a.data["datawrapper-height"][e]+"px")}})}();</script>
+  </div>
+
+<div class="story-body">
+    <h2>Internet penetration in Iran</h2>
+    <p>While Iranians' internet use appears to lag behind other Middle Eastern countries, its important to note that its population dwarfs its neighbors. Iran sits at 81.16 million people, with Saudi Arabia in a distant second with 32.94 million.
+    </p>
+    <p>
+    An internet blackout would affect tens of millions. A joint report from Hootsuite entitled “Global Digital 2019" put the number of Iranian social media users at 47 million, or 57 percent of the population. A number that's not too far behind the 70 percent rate in the U.S.
+    </p>
+    <p>
+    Before it was banned in April 2018, the most popular social media platform in Iran was Telegram, with 40 million users. Instagram reached 24 million users in the same timeframe, making Iran the seventh biggest market for the photo-sharing app.
+    </p>
+    <p>
+    What happens next? Iran appears to believe that controlling the country’s online spaces is necessary for the survival of its regime. Many other countries seem to think the same. In September, Pakistan cut off internet access in some regions in response to protests, and India has done the same. Russia recently approved a bill that gives it the power to hamstring internet access if need be. The country even plans to run drills to ensure its blocks work when they are being used in live responses.
+    </p>
+    <p>
+    Iran may be the country that currently holds the title for "biggest internet blackout," but for how long?
+    </p>
+</div>
