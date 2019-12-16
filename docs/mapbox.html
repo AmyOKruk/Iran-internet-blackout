@@ -90,7 +90,7 @@
             }
         }
 
-        h4 {
+        #h4 {
             font-size: 20px;
             position: fixed;
             top: 60vh;
@@ -106,9 +106,27 @@
             margin: 0 auto 10px;
             display: block;
         }
+
+        #title {
+            font-size: 20px;
+            position: fixed;
+            top: 5vh;
+            right: 25vw;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: white;
+            padding: 0 1%;
+
+        }
+
+        .Bam {
+            color: red;
+        }
+
         </style>
 </head>
 <body>
+
+<h4 id='title'></h4>
 <h4 id='h4'></h4>
 <div id="map"></div>
 <div id="story"></div>
@@ -284,13 +302,14 @@ map.on("load", function() {
         var chapter = config.chapters.find(chap => chap.id === response.element.id);
         if (chapter.id == 'other-identifier' ) {
             document.getElementById("h4").style.opacity = "0";
+            document.getElementById("title").style.opacity = "0";
             
         }
         if (chapter.id == 'slug-style-id-first' ) {
             document.getElementById("h4").style.opacity = "1";
+            document.getElementById("title").style.opacity = "1";
             
         }
-        console.log(chapter.id)
         response.element.classList.add('active');
         map.flyTo(chapter.location);
         if (config.showMarkers) {
@@ -298,7 +317,6 @@ map.on("load", function() {
         }
         if (chapter.onChapterEnter.length > 0) {
             chapter.onChapterEnter.forEach(setLayerOpacity);
-            console.log(chapter.id)
         }
     })
     .onStepExit(response => {
@@ -385,59 +403,100 @@ mutationObserver.observe(
                 }
             });
 
-   
 
             filterBy(0);
 
-            var unique = 0;
-            var interval = setInterval( increment, 250);
+            // var unique = 0;
+            // var interval = setInterval( increment, 250);
 
-            function increment(){
-                unique = unique % 360 + 1;
+            // function increment(){
+            //     unique = unique % 360 + 1;
 
-                if (unique == 102) {
-                    unique = 0
-                }
+            //     if (unique == 102) {
+            //         unique = 0
+            //     }
+            //     else if (unique == 1) {
+            //         document.getElementById("h4").innerHTML = 'Nov. 16, 2019'
+            //     }
+            //     else if (unique == 20) {
+            //         document.getElementById("h4").innerHTML = 'Nov. 17, 2019'
+            //     }
+            //     else if (unique == 40) {
+            //         document.getElementById("h4").innerHTML = 'Nov. 18, 2019'
+            //     }
+            //     else if (unique == 60) {
+            //         document.getElementById("h4").innerHTML = 'Nov. 19, 2019'
+            //     }
 
-                else if (unique == 1) {
-                    document.getElementById("h4").innerHTML = 'Nov. 16, 2019'
-                }
-
-                else if (unique == 20) {
-                    document.getElementById("h4").innerHTML = 'Nov. 17, 2019'
-                }
-
-                else if (unique == 40) {
-                    document.getElementById("h4").innerHTML = 'Nov. 18, 2019'
-                }
-
-                else if (unique == 60) {
-                    document.getElementById("h4").innerHTML = 'Nov. 19, 2019'
-                }
-
-                else if (unique == 80) {
-                    document.getElementById("h4").innerHTML = 'Nov. 20, 2019'
-                }
-
-                filterBy(unique);
-
-            }
-
-
-
-            // console.log(
-            //     z = data.features.find(function(d) {
-            //     d.properties.unique = d.properties.unique;
-            //     return d;
-            // });
-            // )
-
-            // filter data when slider changes
-
-            // document.getElementById('slider').addEventListener('input', function(e) {
-            //     var unique = parseInt(e.target.value, 10);
+            //     else if (unique == 80) {
+            //         document.getElementById("h4").innerHTML = 'Nov. 20, 2019'
+            //     }
             //     filterBy(unique);
-            // });
+            // }
+
+            var throttledListener = throttle(scrollListener, 500);
+            window.addEventListener('scroll', throttledListener);
+
+            function throttle(func, delay) { // allows [func] to run once every [delay] ms
+                var func = func.bind(func),
+                    last = Date.now();
+                return function() {
+                    if (Date.now() - last > delay) {
+                        func();
+                        last = Date.now();
+                    }
+                }
+            }
+            function scrollListener() {
+                var threshold = document.body.clientHeight * 0.01;
+                if (window.pageYOffset >= threshold) {
+                    // alert('user scrolled to threshold; listener removed');
+                    var unique = 0;
+                    var interval = setInterval( increment, 250);
+
+                    function increment(){
+                        unique = unique % 360 + 1;
+
+                        if (unique == 102) {
+                            unique = 0
+                        }
+                        else if (unique == 1) {
+                            document.getElementById("h4").innerHTML = 'Nov. 16, 2019',
+                            document.getElementById("title").innerHTML = 'Before'
+                            map.setPaintProperty('connection-circles', 'circle-color', '#67000D');
+                        }
+                        else if (unique == 20) {
+                            document.getElementById("h4").innerHTML = 'Nov. 17, 2019'
+                            document.getElementById("title").innerHTML = 'During'
+                            var colors = [
+                                'match',
+                                ['get', 'name_2'],
+                                'Bam',
+                                '#fbb03b',
+                                /* other */ '#67000D'
+                                ]  
+                            map.setPaintProperty('connection-circles', 'circle-color', colors);
+                        }
+                        else if (unique == 40) {
+      
+                            document.getElementById("h4").innerHTML = 'Nov. 18, 2019'
+                            document.getElementById("title").innerHTML = 'During'
+
+                        }
+                        else if (unique == 60) {
+                            document.getElementById("h4").innerHTML = 'Nov. 19, 2019'
+                            document.getElementById("title").innerHTML = 'During'
+                        }
+
+                        else if (unique == 80) {
+                            document.getElementById("h4").innerHTML = 'Nov. 20, 2019'
+                            document.getElementById("title").innerHTML = 'During'
+                        }
+                        filterBy(unique);
+                    }
+                    window.removeEventListener('scroll', throttledListener);
+                }
+            }
 
         });
     });

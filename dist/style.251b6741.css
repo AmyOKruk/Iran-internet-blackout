@@ -413,6 +413,23 @@ select, option {
 h3 {
     font-size: 20px;
 }
+
+#chart-02 {
+    max-width: 700px;
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 5%;
+}
+
+.source3 {
+    text-align: right;
+    margin-left: 200px !important;
+    color: grey;
+    font-size: 12px;
+}
+
 @media (min-width: 911px) {
     .header {
         display: flex;

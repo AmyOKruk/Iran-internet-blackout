@@ -47,6 +47,7 @@
     "leaflet.markercluster": "^1.4.1"
   },
   "dependencies": {
+    "data": "^0.6.1",
     "parcel-plugin-static-files-copy": "^2.2.1"
   }
 }
