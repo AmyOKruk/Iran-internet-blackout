@@ -91,7 +91,7 @@ function ready(datapoints) {
           if (name === 'Iran') {
             return 'red'
           } else {
-            return 'black'
+            return '#4C8DD6'
           }
         })
         .attr('fill', 'none')
@@ -112,7 +112,7 @@ function ready(datapoints) {
           if (name === 'Iran') {
             return 'red'
           } else {
-            return 'black'
+            return '#4C8DD6'
           }
         })
         .raise()
@@ -131,7 +131,7 @@ function ready(datapoints) {
         .attr('x', width / 2)
         .attr('y', 0 - margin.top / 2)
         .attr('text-anchor', 'middle')
-        .style('font-size', '10px')
+        .style('font-size', '12px')
         .attr('fill', function(d) {
           if (name === 'Iran') {
             return 'red'
@@ -144,7 +144,7 @@ function ready(datapoints) {
           if (name === 'Iran') {
             return 700
           } else {
-            return 400
+            return 700
           }
         })
 

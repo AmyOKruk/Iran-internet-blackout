@@ -28703,7 +28703,7 @@ function ready(datapoints) {
       if (name === 'Iran') {
         return 'red';
       } else {
-        return 'black';
+        return '#4C8DD6';
       }
     }).attr('fill', 'none').raise();
     svg.selectAll('circle').data(datapoints).enter().append('circle').attr('class', name.toLowerCase().replace(/[^a-z]*/g, '')) // .attr('cx', line2)
@@ -28716,14 +28716,14 @@ function ready(datapoints) {
       if (name === 'Iran') {
         return 'red';
       } else {
-        return 'black';
+        return '#4C8DD6';
       }
     }).raise().on('mouseover', function () {
       d3.selectAll('.' + this.getAttribute('class')).attr('opacity', 1);
     }).on('mouseout', function () {
       d3.selectAll('text' + '.' + this.getAttribute('class')).attr('opacity', 0);
     });
-    svg.append('text').attr('x', width / 2).attr('y', 0 - margin.top / 2).attr('text-anchor', 'middle').style('font-size', '10px').attr('fill', function (d) {
+    svg.append('text').attr('x', width / 2).attr('y', 0 - margin.top / 2).attr('text-anchor', 'middle').style('font-size', '12px').attr('fill', function (d) {
       if (name === 'Iran') {
         return 'red';
       } else {
@@ -28733,7 +28733,7 @@ function ready(datapoints) {
       if (name === 'Iran') {
         return 700;
       } else {
-        return 400;
+        return 700;
       }
     });
     svg.append('text').attr('class', function (d) {
